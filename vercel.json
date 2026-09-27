@@ -15,6 +15,13 @@
   "env": {
     "OPENROUTER_API_KEY": "@openrouter-api-key",
     "AISOD_HARNESS_DEFAULT_MODEL": "openrouter",
-    "AISOD_HARNESS_PORT": "8000"
+    "AISOD_HARNESS_PORT": "8000",
+    "AISOD_HARNESS_HOST": "0.0.0.0"
+  },
+  "functions": {
+    "api/index.py": {
+      "memory": 1024,
+      "maxDuration": 300
+    }
   }
 }
