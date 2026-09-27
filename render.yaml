@@ -1,0 +1,19 @@
+# AISOD 3A Harness — Render deployment blueprint
+services:
+  - type: web
+    name: aisod3a-harness
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api_server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+        description: "OpenRouter API key — get one at https://openrouter.ai/keys"
+      - key: AISOD_HARNESS_DEFAULT_MODEL
+        value: openrouter
+      - key: AISOD_HARNESS_HOST
+        value: 0.0.0.0
+      - key: AISOD_HARNESS_PORT
+        value: 8000

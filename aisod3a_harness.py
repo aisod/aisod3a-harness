@@ -198,7 +198,39 @@ class AISODModelProvider:
     def _chat_fallback(
         self, messages: List[Dict[str, str]], **kwargs
     ) -> str:
-        """Standalone fallback: direct model call via Hermes's provider."""
+        """Standalone fallback: try OpenRouter first, then Hermes's provider."""
+        openrouter_key = os.environ.get("OPENROUTER_API_KEY")
+        if openrouter_key:
+            try:
+                import httpx  # noqa: E402
+
+                model = os.environ.get(
+                    "AISOD_HARNESS_FALLBACK_MODEL", "openai/gpt-4o-mini"
+                )
+                response = httpx.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {openrouter_key}",
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": os.environ.get(
+                            "AISOD_SITE_URL", "https://harness.aisod.tech"
+                        ),
+                        "X-Title": "AISOD 3A Harness",
+                    },
+                    json={
+                        "model": model,
+                        "messages": messages,
+                        "temperature": kwargs.get("temperature", 0.7),
+                        "max_tokens": kwargs.get("max_tokens", 4096),
+                    },
+                    timeout=kwargs.get("timeout", 30),
+                )
+                response.raise_for_status()
+                data = response.json()
+                return data["choices"][0]["message"]["content"]
+            except Exception as exc:  # noqa: BLE001
+                return f"[OpenRouter error: {exc}]"
+
         try:
             from hermes_tools import chat as _chat_fn  # noqa: E402
 
@@ -209,7 +241,7 @@ class AISODModelProvider:
         except ImportError:
             return (
                 "[harness error: standalone mode needs a model provider — "
-                "run inside Hermes, or configure AISOD_HARNESS_FALLBACK]"
+                "set OPENROUTER_API_KEY or run inside Hermes]"
             )
 
     def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISOD 3A Harness — AI Automation Agent</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            padding: 16px 24px;
+            background: #111118;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 900;
+            color: #fff;
+        }
+
+        .tagline {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+            padding: 32px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 32px 0;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: #999;
+            line-height: 1.6;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #15151f;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #aaa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px;
+            background: #0a0a0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: #6366f1;
+        }
+
+        textarea::placeholder {
+            color: #555;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        select, input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            background: #0a0a0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        select:focus, input:focus {
+            border-color: #6366f1;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        button:hover { opacity: 0.9; }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #0a0a0f;
+            border: 1px solid #222;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .dot.offline { background: #ef4444; }
+        .dot.busy { background: #f59e0b; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .output {
+            background: #0a0a0f;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 120px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #ccc;
+        }
+
+        .output.empty {
+            color: #555;
+            font-family: inherit;
+            font-style: italic;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #6366f1;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            width: 100%;
+            padding: 16px 24px;
+            background: #111118;
+            border-top: 1px solid #222;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        .success {
+            color: #22c55e;
+        }
+
+        .meta {
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-mark">3A</div>
+            <span>AISOD 3A Harness</span>
+        </div>
+        <div class="tagline">AI Automation Agent</div>
+    </div>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Harness the AI Automation Agent</h1>
+            <p>Enter a goal and the AISOD 3A Harness plans, executes, and evaluates it across multiple agent roles — Planner, Coder, Researcher, and Evaluator.</p>
+        </div>
+
+        <div class="card">
+            <label for="goal">Goal</label>
+            <textarea id="goal" placeholder="e.g. OCR-extract and clean the Oshindonga PDFs in the corpus directory, then draft instruction-response pairs for fine-tuning"></textarea>
+        </div>
+
+        <div class="card">
+            <div class="row" style="margin-bottom: 12px;">
+                <div style="flex: 1;">
+                    <label for="model">Model Provider</label>
+                    <select id="model">
+                        <option value="openrouter">OpenRouter (any model)</option>
+                        <option value="hermes">Hermes Provider Pool</option>
+                        <option value="aisod-local">AISOD Local (LRLM)</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label for="timeout">Timeout (seconds)</label>
+                    <input type="text" id="timeout" value="120" placeholder="120">
+                </div>
+            </div>
+
+            <button id="runBtn" onclick="runHarness()">
+                <span id="btnText">Run Harness</span>
+            </button>
+
+            <div style="margin-top: 14px;">
+                <div class="status-bar">
+                    <span class="dot" id="statusDot"></span>
+                    <span id="statusText">Ready — configure your API key in Vercel settings</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <label for="output">Output</label>
+            <div class="output empty" id="output">Results will appear here after the harness runs. Each step — Planner, Coder, Researcher, Evaluator — is logged.</div>
+        </div>
+
+        <div class="meta" id="meta"></div>
+    </div>
+
+    <div class="footer">
+        AISOD 3A Harness · AI Automation Agent · Built on Hermes Agent · <a href="https://github.com/aisod/aisod3a-harness" style="color: #6366f1;">GitHub</a>
+    </div>
+
+    <script>
+        const API_URL = '/v1/harness/run';
+        const STATUS_URL = '/v1/harness/status';
+        const MODELS_URL = '/v1/models';
+
+        const goalEl = document.getElementById('goal');
+        const modelEl = document.getElementById('model');
+        const timeoutEl = document.getElementById('timeout');
+        const runBtn = document.getElementById('runBtn');
+        const btnText = document.getElementById('btnText');
+        const outputEl = document.getElementById('output');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const metaEl = document.getElementById('meta');
+
+        async function checkStatus() {
+            try {
+                const res = await fetch(STATUS_URL);
+                const data = await res.json();
+                if (data.mode === 'standalone') {
+                    statusDot.className = 'dot';
+                    statusText.textContent = 'Online — ' + (data.models.openrouter?.description || 'ready');
+                } else {
+                    statusDot.className = 'dot';
+                    statusText.textContent = 'Online — running in Hermes delegate mode';
+                }
+            } catch (e) {
+                statusDot.className = 'dot offline';
+                statusText.textContent = 'Status check failed — API may not be configured';
+            }
+        }
+
+        async function loadModels() {
+            try {
+                const res = await fetch(MODELS_URL);
+                const models = await res.json();
+                metaEl.textContent = 'Available models: ' + models.map(m => m.name).join(' · ');
+            } catch (e) {
+                metaEl.textContent = '';
+            }
+        }
+
+        async function runHarness() {
+            const goal = goalEl.value.trim();
+            if (!goal) {
+                outputEl.textContent = 'Please enter a goal.';
+                outputEl.className = 'output error';
+                return;
+            }
+
+            runBtn.disabled = true;
+            btnText.textContent = 'Running…';
+            statusDot.className = 'dot busy';
+            statusText.textContent = 'Harness is working — this may take a minute';
+            outputEl.textContent = '⏳ Planning and executing…';
+            outputEl.className = 'output';
+
+            const start = Date.now();
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        goal: goal,
+                        model: modelEl.value,
+                        context: 'Deployed via harness.aisod.tech',
+                        spec: 'Charter Article IV FIRST: OCR extraction, automated cleaning, language detection, and drafting instruction pairs for the Corpus. Human role still required for every certification decision.'
+                    })
+                });
+
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${errText.slice(0, 300)}`);
+                }
+
+                const data = await res.json();
+                const report = data.report;
+
+                const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+                let out = '';
+
+                if (report.pass === true) out += '✅ PASSED\n\n';
+                else if (report.pass === false) out += '❌ FAILED\n\n';
+                else out += '⏸ NO EVALUATION\n\n';
+
+                out += 'Goal: ' + report.goal + '\n';
+                out += 'Mode: ' + (report.model_status?.mode || 'unknown') + '\n';
+                out += 'Time: ' + elapsed + 's\n\n';
+
+                out += '── Plan (' + report.plan?.length + ' steps) ──\n\n';
+                if (report.plan) {
+                    report.plan.forEach(step => {
+                        out += `  Step ${step.step}: [${step.agent}] ${step.task}\n`;
+                        if (step.depends_on?.length) {
+                            out += `    Depends on: ${step.depends_on.join(', ')}\n`;
+                        }
+                    });
+                }
+
+                out += '\n── Results ──\n\n';
+                const results = report.results || {};
+                Object.keys(results).forEach(k => {
+                    const r = results[k];
+                    const preview = r.output?.slice(0, 500) || '';
+                    out += `  Step ${k} [${r.agent}]:\n${preview}\n\n`;
+                });
+
+                if (report.evaluation) {
+                    out += '── Evaluation ──\n\n';
+                    out += '  Passed: ' + report.evaluation.passed + '\n';
+                    out += '  Score: ' + report.evaluation.score + '\n';
+                    out += '  Recommendation: ' + report.evaluation.recommendation + '\n';
+                    if (report.evaluation.issues?.length) {
+                        out += '  Issues:\n';
+                        report.evaluation.issues.forEach(i => out += '    - ' + i + '\n');
+                    }
+                    out += '\n  Note: ' + (report.evaluation.note || '') + '\n';
+                }
+
+                outputEl.textContent = out;
+                outputEl.className = 'output';
+                statusDot.className = 'dot';
+                statusText.textContent = report.pass === true
+                    ? '✅ Last run passed'
+                    : report.pass === false
+                        ? '❌ Last run failed — check output'
+                        : '✅ Last run completed (no evaluation step)';
+            } catch (e) {
+                outputEl.textContent = 'Error: ' + e.message;
+                outputEl.className = 'output error';
+                statusDot.className = 'dot offline';
+                statusText.textContent = 'API error — check that OPENROUTER_API_KEY is set in Vercel';
+            } finally {
+                runBtn.disabled = false;
+                btnText.textContent = 'Run Harness';
+                statusDot.className = statusDot.className.replace('busy', '');
+            }
+        }
+
+        // Initialize
+        checkStatus();
+        loadModels();
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>
