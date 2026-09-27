@@ -7,7 +7,7 @@
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index.py" }
+    { "source": "/(.*)", "destination": "/api" }
   ],
   "env": {
     "OPENROUTER_API_KEY": "@openrouter-api-key",

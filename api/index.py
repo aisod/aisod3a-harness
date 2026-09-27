@@ -7,27 +7,19 @@ This wrapper imports the harness app and serves it via Mangum
 through the @vercel/python builder.
 """
 
-import os
-import sys
+import api_server
 
-# Ensure the project root is on the path so we can import the harness.
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, PROJECT_ROOT)
-
-# Import the FastAPI app from the root module.
-from api_server import app  # noqa: E402
+app = api_server.app
 
 
 def handler(environ, start_response):
     """WSGI handler that Vercel's Python runtime calls."""
-    # Mangum converts ASGI (FastAPI) to WSGI for Vercel.
     try:
         from mangum import Mangum
 
         handler_instance = Mangum(app, lifespan="off")
         return handler_instance(environ, start_response)
     except ImportError:
-        # Fallback: basic WSGI pass-through (not recommended for production).
         from io import BytesIO
 
         status = "200 OK"
